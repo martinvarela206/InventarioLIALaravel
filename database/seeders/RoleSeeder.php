@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
             ['rol' => 'user_admin'],
             ['rol' => 'coordinador'],
             ['rol' => 'tecnico'],
-            ['rol' => 'invitado'],
+            ['rol' => 'revisor'],
         ]);
     }
 }

@@ -1,43 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="text-2xl font-bold mb-4">Detalle del Elemento</h1>
-
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-6">
-        <div class="grid grid-cols-2 gap-4">
-            <div><strong>Nro LIA:</strong> {{ $elemento->nro_lia }}</div>
-            <div><strong>Nro UNSJ:</strong> {{ $elemento->nro_unsj }}</div>
-            <div><strong>Tipo:</strong> {{ $elemento->tipo }}</div>
-            <div><strong>Descripción:</strong> {{ $elemento->descripcion }}</div>
-            <div><strong>Cantidad:</strong> {{ $elemento->cantidad }}</div>
+    <div class="flex flex-col lg:flex-row gap-6">
+        <div class="flex-1 bg-white shadow-md rounded p-6">
+            <h1 class="text-2xl font-bold mb-4">Detalle del Elemento</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+                <div><strong class="block text-sm text-gray-500">Nro LIA</strong><div class="mt-1">{{ $elemento->nro_lia }}</div></div>
+                <div><strong class="block text-sm text-gray-500">Nro UNSJ</strong><div class="mt-1">{{ $elemento->nro_unsj }}</div></div>
+                <div><strong class="block text-sm text-gray-500">Tipo</strong><div class="mt-1">{{ $elemento->tipo }}</div></div>
+                <div><strong class="block text-sm text-gray-500">Cantidad</strong><div class="mt-1">{{ $elemento->cantidad }}</div></div>
+                <div class="md:col-span-2"><strong class="block text-sm text-gray-500">Descripción</strong><div class="mt-1">{{ $elemento->descripcion }}</div></div>
+            </div>
         </div>
-    </div>
 
-    <div class="flex justify-between items-center mb-4">
+        <!-- right column removed: controls moved above the full movements table -->
+    </div>
+    <div class="flex items-center justify-between mt-6 mb-4">
         <h2 class="text-xl font-bold">Movimientos asociados</h2>
         @can('write-data')
-            <a href="{{ route('movimientos.create', ['nro_lia' => $elemento->nro_lia]) }}" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm">Añadir Movimiento</a>
+            <a href="{{ route('movimientos.create', ['nro_lia' => $elemento->nro_lia]) }}" class="inline-flex items-center gap-2 bg-[#dba800] hover:bg-[#fbc101] text-[#111] font-semibold py-2 px-3 rounded shadow text-sm">Añadir Movimiento</a>
         @endcan
     </div>
+
     <div class="bg-white shadow-md rounded overflow-x-auto">
         <table class="min-w-full table-auto">
             <thead>
-                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                <tr class="bg-amber-300 text-amber-900 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Fecha</th>
                     <th class="py-3 px-6 text-left">Estado</th>
                     <th class="py-3 px-6 text-left">Ubicación</th>
+                    <th class="py-3 px-6 text-left">Usuario</th>
                     <th class="py-3 px-6 text-left">Comentario</th>
                     @can('manage-movements')
                         <th class="py-3 px-6 text-center">Acciones</th>
                     @endcan
                 </tr>
             </thead>
-            <tbody class="text-gray-600 text-sm font-light">
+            <tbody class="text-gray-800 text-sm font-light">
                 @foreach($movimientos as $m)
-                    <tr class="border-b border-gray-200 hover:bg-gray-100">
-                        <td class="py-3 px-6 text-left whitespace-nowrap">{{ $m->fecha->format('Y-m-d H:i') }}</td>
+                    @php $isLast = isset($ultimoMovimiento) && $ultimoMovimiento && $m->id === $ultimoMovimiento->id; @endphp
+                    <tr class="odd:bg-amber-50 even:bg-amber-100 border-b border-gray-300 hover:bg-amber-200 {{ $isLast ? 'bg-amber-300 border-l-4 border-amber-600' : '' }}">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
+                            {{ $m->fecha->format('Y-m-d H:i') }}
+                            @if($isLast)
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-700 text-white">Último</span>
+                            @endif
+                        </td>
                         <td class="py-3 px-6 text-left">{{ $m->estado }}</td>
-                        <td class="py-3 px-6 text-left">{{ $m->ubicacion }}</td>
+                        <td class="py-3 px-6 text-left"><span class="{{ $isLast ? 'font-semibold text-amber-900' : '' }}">{{ $m->ubicacion }}</span></td>
+                        <td class="py-3 px-6 text-left">{{ $m->usuario->nombre ?? $m->user_id ?? 'N/A' }}</td>
                         <td class="py-3 px-6 text-left">{{ $m->comentario }}</td>
                         @can('manage-movements')
                             <td class="py-3 px-6 text-center">
@@ -64,11 +75,11 @@
             </tbody>
         </table>
     </div>
-    <div class="mt-4">
+    <div class="mt-6">
         @if(request('from') == 'revision')
-            <a href="{{ route('revision.index') }}" class="text-blue-500 hover:underline">Volver a Revisión</a>
+            <a href="{{ route('revision.index') }}" class="text-[#111] underline">Volver a Revisión</a>
         @else
-            <a href="{{ route('elementos.index') }}" class="text-blue-500 hover:underline">Volver a Elementos</a>
+            <a href="{{ route('elementos.index') }}" class="text-[#111] underline">Volver a Elementos</a>
         @endif
     </div>
 @endsection

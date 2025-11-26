@@ -13,6 +13,10 @@ class ElementoController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->user()->hasRole('tecnico')) {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+
         $query = Elemento::query();
 
         if ($request->has('search')) {
@@ -70,8 +74,12 @@ class ElementoController extends Controller
     public function show(string $id)
     {
         $elemento = Elemento::findOrFail($id);
-        $movimientos = $elemento->movimientos; // Assuming relationship exists
-        return view('elementos.show', compact('elemento', 'movimientos'));
+        // Eager-load movimientos with usuario to avoid N+1 queries
+        $movimientos = $elemento->movimientos()->with('usuario')->get(); // relationship returns ordered movimientos
+        // Get the latest movimiento with usuario (may be null)
+        $ultimoMovimiento = Movimiento::where('nro_lia', $elemento->nro_lia)->with('usuario')->orderBy('fecha', 'desc')->first();
+
+        return view('elementos.show', compact('elemento', 'movimientos', 'ultimoMovimiento'));
     }
 
     /**

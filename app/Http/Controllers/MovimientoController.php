@@ -14,7 +14,11 @@ class MovimientoController extends Controller
      */
     public function index()
     {
-        $movimientos = Movimiento::with(['elemento', 'usuario'])->get();
+        if (!auth()->user()->hasRole('coordinador')) {
+            abort(403, 'No tienes permiso para ver esta página.');
+        }
+
+        $movimientos = Movimiento::with(['elemento', 'usuario'])->orderBy('fecha', 'desc')->get();
         return view('movimientos.index', compact('movimientos'));
     }
 

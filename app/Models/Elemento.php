@@ -25,7 +25,7 @@ class Elemento extends Model
 
     public function movimientos()
     {
-        return $this->hasMany(Movimiento::class, 'nro_lia', 'nro_lia');
+        return $this->hasMany(Movimiento::class, 'nro_lia', 'nro_lia')->orderBy('fecha', 'desc');
     }
 
     public function ultimoMovimiento()

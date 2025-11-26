@@ -10,6 +10,12 @@ class RevisionController extends Controller
 {
     public function index(Request $request)
     {
+        $user = auth()->user();
+
+        if (!$user || !$user->hasRole('revisor')) {
+            return view('revision.welcome');
+        }
+
         $query = Elemento::with('ultimoMovimiento');
 
         if ($request->has('search')) {
