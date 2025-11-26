@@ -44,7 +44,7 @@ class RevisionController extends Controller
             });
         }
 
-        $elementos = $query->get();
+        $elementos = $query->paginate(10)->withQueryString();
         return view('revision.index', compact('elementos'));
     }
 }

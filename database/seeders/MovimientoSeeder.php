@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Elemento;
+use App\Models\Movimiento;
+use Carbon\Carbon;
 
 class MovimientoSeeder extends Seeder
 {
@@ -12,14 +15,70 @@ class MovimientoSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Movimiento::insert([
-            ['nro_lia' => 'LIA001', 'user_id' => 1, 'estado' => 'ingresado', 'ubicacion' => 'Deposito', 'fecha' => '2023-01-10 09:00:00', 'comentario' => 'Ingreso inicial'],
-            ['nro_lia' => 'LIA001', 'user_id' => 2, 'estado' => 'funcionando', 'ubicacion' => 'Laboratorio 1', 'fecha' => '2023-01-15 10:30:00', 'comentario' => 'Instalado en puesto 1'],
-            ['nro_lia' => 'LIA002', 'user_id' => 1, 'estado' => 'ingresado', 'ubicacion' => 'Deposito', 'fecha' => '2023-02-01 08:00:00', 'comentario' => 'Compra nueva'],
-            ['nro_lia' => 'LIA002', 'user_id' => 3, 'estado' => 'prestado', 'ubicacion' => 'Oficina Docentes', 'fecha' => '2023-02-05 14:00:00', 'comentario' => 'Prestado a Prof. X'],
-            ['nro_lia' => 'LIA003', 'user_id' => 1, 'estado' => 'ingresado', 'ubicacion' => 'Deposito', 'fecha' => '2023-03-10 11:00:00', 'comentario' => 'Donación'],
-            ['nro_lia' => 'LIA004', 'user_id' => 1, 'estado' => 'ingresado', 'ubicacion' => 'Deposito', 'fecha' => '2023-03-12 09:30:00', 'comentario' => null],
-            ['nro_lia' => 'LIA004', 'user_id' => 2, 'estado' => 'dado de baja', 'ubicacion' => 'Deposito Residuos', 'fecha' => '2023-04-01 16:00:00', 'comentario' => 'Falla irreparable'],
-        ]);
+        $elementos = Elemento::all();
+        $users = [1, 2]; // Admin, Coordinador (IDs asumidos de UserSeeder)
+        $locations = ['LIA', 'Administracion', 'Prestado', 'Lab FB', 'Lab Hardware', 'Of Redes', 'Lab Redes'];
+        $states = ['ingresado', 'funcionando', 'guardado', 'prestado', 'dado de baja'];
+
+        foreach ($elementos as $elemento) {
+            $movementsCount = rand(1, 5);
+            $currentDate = Carbon::now()->subMonths(rand(6, 24)); // Fecha de inicio aleatoria
+
+            // 1. Movimiento Inicial
+            $initialUser = $users[array_rand($users)];
+            Movimiento::create([
+                'nro_lia' => $elemento->nro_lia,
+                'user_id' => $initialUser,
+                'estado' => 'ingresado',
+                'ubicacion' => 'LIA',
+                'fecha' => $currentDate->copy(),
+                'comentario' => 'Ingreso inicial al sistema'
+            ]);
+
+            // 2. Movimientos subsiguientes
+            for ($i = 1; $i < $movementsCount; $i++) {
+                $currentDate->addDays(rand(5, 60)); // Avanzar fecha
+                $user = $users[array_rand($users)];
+                
+                $state = $states[array_rand($states)];
+                $location = 'LIA';
+                $comment = 'Movimiento registrado';
+
+                // Lógica específica por estado
+                if ($state === 'dado de baja') {
+                    $location = 'Dado de Baja';
+                    $comment = 'Por resolucion Nro ' . rand(100000, 999999);
+                    
+                    Movimiento::create([
+                        'nro_lia' => $elemento->nro_lia,
+                        'user_id' => $user,
+                        'estado' => $state,
+                        'ubicacion' => $location,
+                        'fecha' => $currentDate->copy(),
+                        'comentario' => $comment
+                    ]);
+                    break; // Detener generación si se da de baja
+                } elseif ($state === 'prestado') {
+                    $location = 'Prestado';
+                    $comment = 'Prestamo a docente/alumno';
+                } elseif ($state === 'funcionando' || $state === 'guardado') {
+                    $validLocs = array_diff($locations, ['Dado de Baja', 'Prestado']);
+                    $location = $validLocs[array_rand($validLocs)];
+                    $comment = 'Asignado a ' . $location;
+                } elseif ($state === 'ingresado') {
+                     $location = 'LIA';
+                     $comment = 'Reingreso a depósito';
+                }
+
+                Movimiento::create([
+                    'nro_lia' => $elemento->nro_lia,
+                    'user_id' => $user,
+                    'estado' => $state,
+                    'ubicacion' => $location,
+                    'fecha' => $currentDate->copy(),
+                    'comentario' => $comment
+                ]);
+            }
+        }
     }
 }

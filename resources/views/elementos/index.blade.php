@@ -135,4 +135,8 @@
             </tbody>
         </table>
     </div>
+
+    <div class="w-4/5 mx-auto mt-4">
+        {{ $elementos->links() }}
+    </div>
 @endsection

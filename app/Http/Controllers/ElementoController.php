@@ -44,7 +44,7 @@ class ElementoController extends Controller
             });
         }
 
-        $elementos = $query->get();
+        $elementos = $query->paginate(10)->withQueryString();
         return view('elementos.index', compact('elementos'));
     }
 

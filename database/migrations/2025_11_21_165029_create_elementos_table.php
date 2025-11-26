@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('elementos', function (Blueprint $table) {
             $table->string('nro_lia', 25)->primary();
             $table->string('nro_unsj', 25)->nullable();
-            $table->enum('tipo', ['cpu', 'monitor', 'switch', 'router', 'impresora', 'teclado', 'mouse', 'proyector', 'otro']);
+            $table->enum('tipo', ['cpu', 'monitor', 'switch', 'router', 'impresora', 'teclado', 'mouse', 'proyector', 'disco', 'memoria', 'otro']);
             $table->string('descripcion', 255)->nullable();
             $table->integer('cantidad')->nullable();
         });

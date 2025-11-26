@@ -116,4 +116,8 @@
             </tbody>
         </table>
     </div>
+
+    <div class="my-6">
+        {{ $elementos->links() }}
+    </div>
 @endsection

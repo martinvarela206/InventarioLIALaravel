@@ -72,4 +72,8 @@
             </tbody>
         </table>
     </div>
+
+    <div class="w-[90%] mx-auto mt-4">
+        {{ $movimientos->links() }}
+    </div>
 @endsection
