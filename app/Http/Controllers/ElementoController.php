@@ -38,6 +38,12 @@ class ElementoController extends Controller
             $query->where('descripcion', 'like', "%{$gb}GB%");
         }
 
+        if ($request->boolean('prestado')) {
+            $query->whereHas('ultimoMovimiento', function ($q) {
+                $q->where('estado', 'prestado');
+            });
+        }
+
         $elementos = $query->get();
         return view('elementos.index', compact('elementos'));
     }

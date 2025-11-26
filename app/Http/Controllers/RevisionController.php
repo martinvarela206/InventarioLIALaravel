@@ -29,6 +29,21 @@ class RevisionController extends Controller
             });
         }
 
+        if ($request->boolean('cpus')) {
+            $query->where('tipo', 'cpu');
+        }
+
+        if ($request->filled('gb')) {
+            $gb = $request->input('gb');
+            $query->where('descripcion', 'like', "%{$gb}GB%");
+        }
+
+        if ($request->boolean('prestado')) {
+            $query->whereHas('ultimoMovimiento', function ($q) {
+                $q->where('estado', 'prestado');
+            });
+        }
+
         $elementos = $query->get();
         return view('revision.index', compact('elementos'));
     }

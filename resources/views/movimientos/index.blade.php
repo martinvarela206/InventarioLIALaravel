@@ -19,33 +19,33 @@
     </div>
 
     <div class="w-[90%] mx-auto mt-4 shadow-md bg-white rounded-lg overflow-hidden">
-        <table class="w-full border-collapse">
+        <table class="min-w-full table-auto">
             <thead>
-                <tr class="bg-[#fbc101] text-[#111]">
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Nro LIA</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Estado</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Ubicación</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Fecha</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Comentario</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Usuario</th>
-                    <th class="py-2.5 px-3.5 text-left font-semibold tracking-wide">Acciones</th>
+                <tr class="bg-amber-400 text-amber-900 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Nro LIA</th>
+                    <th class="py-3 px-6 text-left">Estado</th>
+                    <th class="py-3 px-6 text-left">Ubicación</th>
+                    <th class="py-3 px-6 text-left">Fecha</th>
+                    <th class="py-3 px-6 text-left">Comentario</th>
+                    <th class="py-3 px-6 text-left">Usuario</th>
+                    <th class="py-3 px-6 text-left">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-gray-900 text-sm font-medium">
                 @foreach($movimientos as $m)
-                    <tr class="hover:bg-[#fcd34d] transition-colors border-b border-gray-200 last:border-b-0 cursor-pointer" onclick="window.location='{{ route('elementos.show', $m->elemento->nro_lia) }}'">
-                        <td class="py-2.5 px-3.5 text-[#111]">
+                    <tr class="odd:bg-amber-50 even:bg-amber-100 border-b border-gray-300 hover:bg-amber-200 cursor-pointer" onclick="window.location='{{ route('elementos.show', $m->elemento->nro_lia) }}'">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">
                             {{ $m->elemento->nro_lia ?? 'N/A' }}
                             @if($m->elemento && $m->elemento->ultimoMovimiento && $m->elemento->ultimoMovimiento->id === $m->id)
                                 <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-amber-700 text-white">Último</span>
                             @endif
                         </td>
-                        <td class="py-2.5 px-3.5 text-[#111]">{{ $m->estado }}</td>
-                        <td class="py-2.5 px-3.5 text-[#111]">{{ $m->ubicacion }}</td>
-                        <td class="py-2.5 px-3.5 text-[#111]">{{ $m->fecha->format('Y-m-d H:i') }}</td>
-                        <td class="py-2.5 px-3.5 text-[#111]">{{ $m->comentario }}</td>
-                        <td class="py-2.5 px-3.5 text-[#111]">{{ $m->usuario->nombre ?? 'N/A' }}</td>
-                        <td class="py-2.5 px-3.5" onclick="event.stopPropagation()">
+                        <td class="py-3 px-6 text-left">{{ $m->estado }}</td>
+                        <td class="py-3 px-6 text-left">{{ $m->ubicacion }}</td>
+                        <td class="py-3 px-6 text-left">{{ $m->fecha->format('Y-m-d H:i') }}</td>
+                        <td class="py-3 px-6 text-left">{{ $m->comentario }}</td>
+                        <td class="py-3 px-6 text-left">{{ $m->usuario->nombre ?? 'N/A' }}</td>
+                        <td class="py-3 px-6 text-left" onclick="event.stopPropagation()">
                             <div class="flex items-center justify-center gap-1">
                                 @can('write-data')
                                     <a href="{{ route('movimientos.edit', $m->id) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110" title="Modificar">

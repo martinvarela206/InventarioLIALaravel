@@ -21,12 +21,16 @@
         @if(request('gb'))
             <input type="hidden" name="gb" value="{{ request('gb') }}">
         @endif
+        @if(request('prestado'))
+            <input type="hidden" name="prestado" value="1">
+        @endif
     </form>
 
     <div class="flex justify-end gap-4 w-4/5 mx-auto mt-4 items-center">
         <form action="{{ route('elementos.index') }}" method="GET" class="flex items-center">
             @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
             @if(request('cpus')) <input type="hidden" name="cpus" value="{{ request('cpus') }}"> @endif
+            @if(request('prestado')) <input type="hidden" name="prestado" value="{{ request('prestado') }}"> @endif
             
             <div class="flex items-center rounded-full border {{ request('gb') ? 'bg-amber-700 border-amber-700 text-white' : 'border-amber-700 text-amber-700 hover:bg-amber-50' }} overflow-hidden transition-colors">
                 <span class="pl-4 pr-1 text-sm font-semibold">GB</span>
@@ -51,6 +55,10 @@
         <a href="{{ route('elementos.index', array_merge(request()->all(), ['cpus' => !request()->boolean('cpus')])) }}" 
            class="px-4 py-1 rounded-full border border-amber-700 text-sm font-semibold transition-colors {{ request()->boolean('cpus') ? 'bg-amber-700 text-white' : 'text-amber-700 hover:bg-amber-50' }}">
            CPUs
+        </a>
+        <a href="{{ route('elementos.index', array_merge(request()->all(), ['prestado' => !request()->boolean('prestado')])) }}" 
+           class="px-4 py-1 rounded-full border border-amber-700 text-sm font-semibold transition-colors {{ request()->boolean('prestado') ? 'bg-amber-700 text-white' : 'text-amber-700 hover:bg-amber-50' }}">
+           Prestado
         </a>
     </div>
 
@@ -79,28 +87,28 @@
     </script>
 
     <div class="w-4/5 mx-auto mt-8 shadow-md bg-white rounded-lg overflow-hidden">
-        <table class="w-full border-collapse">
+        <table class="min-w-full table-auto">
             <thead>
-                <tr class="bg-[#fbc101] text-[#111]">
-                    <th class="py-3 px-5 text-left font-semibold tracking-wide">Nro LIA</th>
-                    <!-- <th class="py-3 px-5 text-left font-semibold tracking-wide">Nro UNSJ</th> -->
-                    <th class="py-3 px-5 text-left font-semibold tracking-wide">Tipo</th>
-                    <th class="py-3 px-5 text-left font-semibold tracking-wide">Descripción</th>
-                    <th class="py-3 px-5 text-left font-semibold tracking-wide">Cantidad</th>
-                    <th class="py-3 px-5 text-left font-semibold tracking-wide">Acciones</th>
+                <tr class="bg-amber-400 text-amber-900 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Nro LIA</th>
+                    <!-- <th class="py-3 px-6 text-left">Nro UNSJ</th> -->
+                    <th class="py-3 px-6 text-left">Tipo</th>
+                    <th class="py-3 px-6 text-left">Descripción</th>
+                    <th class="py-3 px-6 text-left">Cantidad</th>
+                    <th class="py-3 px-6 text-left">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-gray-900 text-sm font-medium">
                 @foreach($elementos as $elemento)
-                    <tr class="hover:bg-[#fcd34d] transition-colors border-b border-gray-200 last:border-b-0 cursor-pointer" onclick="window.location='{{ route('elementos.show', $elemento->nro_lia) }}'">
-                        <td class="py-3 px-5 text-[#111]">{{ $elemento->nro_lia }}</td>
-                        <!-- <td class="py-3 px-5 text-[#111]">{{ $elemento->nro_unsj }}</td> -->
-                        <td class="py-3 px-5 text-[#111]">{{ $elemento->tipo }}</td>
-                        <td class="py-3 px-5 text-[#111] font-medium">
+                    <tr class="odd:bg-amber-50 even:bg-amber-100 border-b border-gray-300 hover:bg-amber-200 cursor-pointer" onclick="window.location='{{ route('elementos.show', $elemento->nro_lia) }}'">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">{{ $elemento->nro_lia }}</td>
+                        <!-- <td class="py-3 px-6 text-left">{{ $elemento->nro_unsj }}</td> -->
+                        <td class="py-3 px-6 text-left">{{ $elemento->tipo }}</td>
+                        <td class="py-3 px-6 text-left">
                             {{ $elemento->descripcion }}
                         </td>
-                        <td class="py-3 px-5 text-[#111]">{{ $elemento->cantidad }}</td>
-                        <td class="py-3 px-5" onclick="event.stopPropagation()">
+                        <td class="py-3 px-6 text-left">{{ $elemento->cantidad }}</td>
+                        <td class="py-3 px-6 text-left" onclick="event.stopPropagation()">
                             <div class="flex items-center justify-center gap-1">
                                 @can('write-data')
                                     <a href="{{ route('elementos.edit', $elemento->nro_lia) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110" title="Modificar">
