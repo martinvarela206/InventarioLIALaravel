@@ -15,7 +15,44 @@
                 <a href="{{ route('elementos.index') }}" class="text-gray-600 hover:text-gray-800">Limpiar</a>
             @endif
         </div>
+        @if(request('cpus'))
+            <input type="hidden" name="cpus" value="1">
+        @endif
+        @if(request('gb'))
+            <input type="hidden" name="gb" value="{{ request('gb') }}">
+        @endif
     </form>
+
+    <div class="flex justify-end gap-4 w-4/5 mx-auto mt-4 items-center">
+        <form action="{{ route('elementos.index') }}" method="GET" class="flex items-center">
+            @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+            @if(request('cpus')) <input type="hidden" name="cpus" value="{{ request('cpus') }}"> @endif
+            
+            <div class="flex items-center rounded-full border {{ request('gb') ? 'bg-amber-700 border-amber-700 text-white' : 'border-amber-700 text-amber-700 hover:bg-amber-50' }} overflow-hidden transition-colors">
+                <span class="pl-4 pr-1 text-sm font-semibold">GB</span>
+                <input 
+                    type="number" 
+                    name="gb" 
+                    value="{{ request('gb') }}" 
+                    class="w-16 py-1 px-1 bg-transparent border-none focus:ring-0 text-sm font-semibold placeholder-amber-700/50 {{ request('gb') ? 'text-white placeholder-white/70' : 'text-amber-700' }} focus:outline-none"
+                    placeholder="#"
+                    onchange="this.form.submit()"
+                >
+                @if(request('gb'))
+                    <a href="{{ route('elementos.index', array_merge(request()->except('gb'))) }}" class="pr-3 pl-1 hover:text-amber-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        <a href="{{ route('elementos.index', array_merge(request()->all(), ['cpus' => !request()->boolean('cpus')])) }}" 
+           class="px-4 py-1 rounded-full border border-amber-700 text-sm font-semibold transition-colors {{ request()->boolean('cpus') ? 'bg-amber-700 text-white' : 'text-amber-700 hover:bg-amber-50' }}">
+           CPUs
+        </a>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -64,18 +101,22 @@
                         </td>
                         <td class="py-3 px-5 text-[#111]">{{ $elemento->cantidad }}</td>
                         <td class="py-3 px-5" onclick="event.stopPropagation()">
-                            <div class="flex items-center gap-1">
+                            <div class="flex items-center justify-center gap-1">
                                 @can('write-data')
-                                    <a href="{{ route('elementos.edit', $elemento->nro_lia) }}" class="bg-[#dba800] text-[#111] border-2 border-[#dba800] rounded px-3.5 py-1.5 cursor-pointer text-sm font-medium transition-colors duration-200 hover:bg-[#fbc101] hover:border-[#fbc101]">
-                                        Modificar
+                                    <a href="{{ route('elementos.edit', $elemento->nro_lia) }}" class="w-4 mr-2 transform hover:text-purple-500 hover:scale-110" title="Modificar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
                                     </a>
                                 @endcan
                                 @can('delete-data')
                                     <form action="{{ route('elementos.destroy', $elemento->nro_lia) }}" method="POST" onsubmit="return confirm('¿Seguro que desea eliminar este elemento?');" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-[#c62828] text-white border-2 border-[#c62828] rounded px-3.5 py-1.5 cursor-pointer text-sm font-medium transition-colors duration-200 hover:bg-[#8e1c1c] hover:border-[#8e1c1c]">
-                                            Eliminar
+                                        <button type="submit" class="w-4 mr-2 transform hover:text-red-500 hover:scale-110" title="Eliminar">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
                                         </button>
                                     </form>
                                 @endcan

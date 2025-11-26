@@ -12,13 +12,28 @@ class MovimientoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!auth()->user()->hasRole('coordinador')) {
             abort(403, 'No tienes permiso para ver esta página.');
         }
 
-        $movimientos = Movimiento::with(['elemento', 'usuario'])->orderBy('fecha', 'desc')->get();
+        $query = Movimiento::with(['elemento.ultimoMovimiento', 'usuario']);
+
+        if ($request->boolean('prestado')) {
+            $query->where('estado', 'prestado');
+        }
+
+        if ($request->boolean('ultimo')) {
+            $query->whereIn('id', function ($q) {
+                $q->select('id')
+                  ->from('movimientos as m_outer')
+                  ->whereRaw('fecha = (select max(fecha) from movimientos as m_inner where m_inner.nro_lia = m_outer.nro_lia)')
+                  ->whereRaw('id = (select max(id) from movimientos as m_inner2 where m_inner2.nro_lia = m_outer.nro_lia and m_inner2.fecha = m_outer.fecha)');
+            });
+        }
+
+        $movimientos = $query->orderBy('fecha', 'desc')->get();
         return view('movimientos.index', compact('movimientos'));
     }
 

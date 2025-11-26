@@ -6,4 +6,5 @@
     @include('welcome.lia')
     @include('welcome.cards')
     @include('common.footer')
+    @include('common.scroll-to-top')
 @endsection

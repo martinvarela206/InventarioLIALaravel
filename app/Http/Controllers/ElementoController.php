@@ -29,6 +29,15 @@ class ElementoController extends Controller
             });
         }
 
+        if ($request->boolean('cpus')) {
+            $query->where('tipo', 'cpu');
+        }
+
+        if ($request->filled('gb')) {
+            $gb = $request->input('gb');
+            $query->where('descripcion', 'like', "%{$gb}GB%");
+        }
+
         $elementos = $query->get();
         return view('elementos.index', compact('elementos'));
     }
